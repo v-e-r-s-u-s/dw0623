@@ -1,36 +1,69 @@
 package dw0623;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.lang.Integer;
 import java.lang.Double;
 
 public class RentalAgreement {
+    private static final String DATE_FORMAT = "MM/dd/yy";
+
     private String toolCode;
     private String toolType;
     private String toolBrand;
     private Integer rentalDays;
-    private Date checkoutDate;
-    private Date dueDate;
+    private LocalDate checkoutDate;
+    private LocalDate dueDate;
     private Double dailyRentalCharge;
     private Integer chargeDays;
     private Double preDiscountCharge;
-    private Integer discountPercent;
+    private Double discountPercent;
     private Double discountAmount;
     private Double finalCharge;
 
-    public RentalAgreement(String toolCode, String toolType, String toolBrand, Integer rentalDays, Date checkoutDate, Date dueDate, Double dailyRentalCharge, Integer chargeDays, Double preDiscountCharge, Integer discountPercent, Double discountAmount, Double finalCharge) {
-        this.toolCode = toolCode;
-        this.toolType = toolType;
-        this.toolBrand = toolBrand;
+    public void print() {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("Tool Code: ").append(toolCode).append("\n")
+        .append("Tool Type:").append(toolType).append("\n")
+        .append("Tool Brand:").append(toolBrand).append("\n")
+        .append("Rental Days:").append(rentalDays.toString()).append("\n")
+        .append("Checkout Date:").append(checkoutDate.toString()).append("\n")
+        .append("Due Date:").append(dueDate.toString()).append("\n")
+        .append("Daily Rental Charge:").append(dailyRentalCharge.toString()).append("\n")
+        .append("Charge Days:").append(chargeDays.toString()).append("\n")
+        .append("Pre-Discount Charge:").append(preDiscountCharge.toString()).append("\n")
+        .append("Discount Percent:").append(discountPercent.toString()).append("\n")
+        .append("Discount Amount:").append(discountAmount.toString()).append("\n")
+        .append("Final Charge:").append(finalCharge.toString());
+
+        System.out.println(builder.toString());
+    }
+
+    // calculatd values are set upon execution to separate business logic
+    public RentalAgreement(String toolCode, String checkoutDate,
+        Integer rentalDays, Integer discount) {
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
+
+        Tool tool = ToolDao.getToolByCode(toolCode);
+        Fee fee = FeeDao.getFeeByType(tool.getToolType());
+
+        this.toolCode = tool.getToolCode();
+        this.toolType = tool.getToolType();
+        this.toolBrand = tool.getToolBrand();
         this.rentalDays = rentalDays;
-        this.checkoutDate = checkoutDate;
-        this.dueDate = dueDate;
-        this.dailyRentalCharge = dailyRentalCharge;
-        this.chargeDays = chargeDays;
-        this.preDiscountCharge = preDiscountCharge;
-        this.discountPercent = discountPercent;
-        this.discountAmount = discountAmount;
-        this.finalCharge = finalCharge;
+        this.checkoutDate = LocalDate.parse(checkoutDate,dateFormatter);
+        this.dailyRentalCharge = fee.getDailyRentalCharge();
+        this.discountPercent = discount / 100.0;
+    }
+
+    public void execute() {
+        this.dueDate = checkoutDate.plusDays(rentalDays);
+        this.chargeDays = FeeCalculator.calculateChargeDays(rentalDays,checkoutDate,toolType);
+        this.preDiscountCharge = chargeDays * dailyRentalCharge;
+        this.discountAmount = preDiscountCharge * discountPercent;
+        this.finalCharge = preDiscountCharge - discountAmount;
     }
 
     public String getToolCode() {
@@ -65,19 +98,19 @@ public class RentalAgreement {
         this.rentalDays = rentalDays;
     }
 
-    public Date getCheckoutDate() {
+    public LocalDate getCheckoutDate() {
         return this.checkoutDate;
     }
 
-    public void setCheckoutDate(Date checkoutDate) {
+    public void setCheckoutDate(LocalDate checkoutDate) {
         this.checkoutDate = checkoutDate;
     }
 
-    public Date getDueDate() {
+    public LocalDate getDueDate() {
         return this.dueDate;
     }
 
-    public void setDueDate(Date dueDate) {
+    public void setDueDate(LocalDate dueDate) {
         this.dueDate = dueDate;
     }
 
@@ -105,11 +138,11 @@ public class RentalAgreement {
         this.preDiscountCharge = preDiscountCharge;
     }
 
-    public Integer getDiscountPercent() {
+    public Double getDiscountPercent() {
         return this.discountPercent;
     }
 
-    public void setDiscountPercent(Integer discountPercent) {
+    public void setDiscountPercent(Double discountPercent) {
         this.discountPercent = discountPercent;
     }
 

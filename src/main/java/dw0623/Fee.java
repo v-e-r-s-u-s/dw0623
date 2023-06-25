@@ -1,13 +1,13 @@
 package dw0623;
 
-public class FeeType {
+public class Fee {
     private String toolType;
     private Double dailyRentalCharge;
     private Boolean weekdayCharge;
     private Boolean weekendCharge;
     private Boolean holidayCharge;
 
-    public FeeType (String toolType, Double dailyRentalCharge, Boolean weekdayCharge,
+    public Fee (String toolType, Double dailyRentalCharge, Boolean weekdayCharge,
         Boolean weekendCharge, Boolean holidayCharge) {
         this.toolType = toolType;
         this.dailyRentalCharge = dailyRentalCharge;

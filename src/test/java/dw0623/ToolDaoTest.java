@@ -7,8 +7,9 @@ public class ToolDaoTest
 {
     @Test
     public void testGetToolByCode() {
-        Tool CHNS = new Tool("CHNS","Chainsaw","Stihl");
-        assertEquals("Tools should contain a chainsaw.",
-            ToolDao.getToolByCode("CHNS").getToolCode(),CHNS.getToolCode());
+        assertEquals("CHNS lookup",ToolDao.getToolByCode("CHNS").getToolCode(),"CHNS");
+        assertEquals("LADW lookup",ToolDao.getToolByCode("LADW").getToolCode(),"LADW");
+        assertEquals("JAKD lookup",ToolDao.getToolByCode("JAKD").getToolCode(),"JAKD");
+        assertEquals("JAKR lookup",ToolDao.getToolByCode("JAKR").getToolCode(),"JAKR");
     }
 }
