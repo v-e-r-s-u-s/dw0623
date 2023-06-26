@@ -26,7 +26,7 @@ public class FeeCalculator {
         LocalDate julyFourthObserved = julyFourth;
 
         if (julyFourth.getDayOfWeek().getValue() == 6) {
-            // observe Friday
+            // observe on Friday
             julyFourthObserved = julyFourth.minusDays(1);
         }
         else if (julyFourth.getDayOfWeek().getValue() == 7) {

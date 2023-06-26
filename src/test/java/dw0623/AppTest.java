@@ -9,8 +9,6 @@ import org.junit.Test;
  */
 public class AppTest 
 {
-    private static final String PARSE_DATE_FORMAT = "M/d/yy";
-
     App app = new App();
 
     // Test Case 1
