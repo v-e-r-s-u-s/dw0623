@@ -11,8 +11,8 @@ public class App
         Integer rentalDays, Integer discount) throws Exception {
 
         // verify discount between 0-100
-        if (discount <= 0 || discount > 100) {
-            throw new Exception("Discount must be between 0 and 100.");
+        if (discount < 0 || discount > 100) {
+            throw new Exception("Discount must be in the range 0-100.");
         }
 
         // verify rental days > 0

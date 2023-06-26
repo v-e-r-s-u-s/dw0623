@@ -3,10 +3,14 @@ package dw0623;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.lang.Integer;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.lang.Double;
 
 public class RentalAgreement {
-    private static final String DATE_FORMAT = "MM/dd/yy";
+    private static final String PARSE_DATE_FORMAT = "M/d/yy";
+    private static final String PRINT_DATE_FORMAT = "MM/dd/yy";
 
     private String toolCode;
     private String toolType;
@@ -21,30 +25,11 @@ public class RentalAgreement {
     private Double discountAmount;
     private Double finalCharge;
 
-    public void print() {
-        StringBuilder builder = new StringBuilder();
-
-        builder.append("Tool Code: ").append(toolCode).append("\n")
-        .append("Tool Type:").append(toolType).append("\n")
-        .append("Tool Brand:").append(toolBrand).append("\n")
-        .append("Rental Days:").append(rentalDays.toString()).append("\n")
-        .append("Checkout Date:").append(checkoutDate.toString()).append("\n")
-        .append("Due Date:").append(dueDate.toString()).append("\n")
-        .append("Daily Rental Charge:").append(dailyRentalCharge.toString()).append("\n")
-        .append("Charge Days:").append(chargeDays.toString()).append("\n")
-        .append("Pre-Discount Charge:").append(preDiscountCharge.toString()).append("\n")
-        .append("Discount Percent:").append(discountPercent.toString()).append("\n")
-        .append("Discount Amount:").append(discountAmount.toString()).append("\n")
-        .append("Final Charge:").append(finalCharge.toString());
-
-        System.out.println(builder.toString());
-    }
-
     // calculatd values are set upon execution to separate business logic
     public RentalAgreement(String toolCode, String checkoutDate,
         Integer rentalDays, Integer discount) {
 
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(PARSE_DATE_FORMAT);
 
         Tool tool = ToolDao.getToolByCode(toolCode);
         Fee fee = FeeDao.getFeeByType(tool.getToolType());
@@ -64,6 +49,33 @@ public class RentalAgreement {
         this.preDiscountCharge = chargeDays * dailyRentalCharge;
         this.discountAmount = preDiscountCharge * discountPercent;
         this.finalCharge = preDiscountCharge - discountAmount;
+    }
+
+    public String toString() {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(PRINT_DATE_FORMAT);
+        DecimalFormat currencyFormatter = (DecimalFormat) DecimalFormat.getCurrencyInstance();
+        currencyFormatter.setRoundingMode(RoundingMode.HALF_UP);
+        NumberFormat percentFormatter = NumberFormat.getPercentInstance();
+
+        return String.join(
+            "\n",
+            "Tool Code: " + toolCode,
+            "Tool Type: " + toolType,
+            "Tool Brand: " + toolBrand,
+            "Rental Days: " + rentalDays.toString(),
+            "Checkout Date: " + dateFormatter.format(checkoutDate),
+            "Due Date: " + dateFormatter.format(dueDate),
+            "Daily Rental Charge: " + currencyFormatter.format(dailyRentalCharge),
+            "Charge Days: " + chargeDays.toString(),
+            "Pre-Discount Charge: " + currencyFormatter.format(preDiscountCharge),
+            "Discount Percent: " + percentFormatter.format(discountPercent),
+            "Discount Amount: " + currencyFormatter.format(discountAmount),
+            "Final Charge: " + currencyFormatter.format(finalCharge)
+        );
+    }
+
+    public void print() {
+        System.out.println(this.toString());
     }
 
     public String getToolCode() {

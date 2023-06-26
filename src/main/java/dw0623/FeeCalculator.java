@@ -3,11 +3,6 @@ package dw0623;
 import java.time.LocalDate;
 
 public class FeeCalculator {
-    public static Double calculate(String toolType) {
-        // placeholder
-        return 0.0;
-    }
-
     public static Integer calculateChargeDays(Integer rentalDays, LocalDate checkoutDate, String toolType) {
         Integer chargeDays = 0;
         Integer dayOfWeek = 0;
@@ -31,28 +26,29 @@ public class FeeCalculator {
         LocalDate julyFourthObserved = julyFourth;
 
         if (julyFourth.getDayOfWeek().getValue() == 6) {
-            // observe Saturday on Friday
+            // observe Friday
             julyFourthObserved = julyFourth.minusDays(1);
         }
         else if (julyFourth.getDayOfWeek().getValue() == 7) {
-            // observe Sunday on Monday
+            // observe on Monday
             julyFourthObserved = julyFourth.plusDays(1);
         }
 
         while(rentalDaysRemaining > 0) {
             dayOfWeek = currentDate.getDayOfWeek().getValue();
 
-            if (julyFourthObserved.equals(currentDate) && fee.getHolidayCharge()) {
-                chargeDays++;
+            if ( julyFourthObserved.equals(currentDate) || laborDay.equals(currentDate) ) {
+                if (fee.getHolidayCharge()) {
+                    chargeDays++;
+                }
             }
-            else if (laborDay.equals(currentDate) && fee.getHolidayCharge()) {
-                chargeDays++;
-            }
-            else if (dayOfWeek <= 5 && fee.getWeekdayCharge()) { // weekday
-                chargeDays++;
-            }
-            else if (dayOfWeek >= 6 && fee.getWeekendCharge()) { // weekend
-                chargeDays++;
+            else {
+                if (dayOfWeek <= 5 && fee.getWeekdayCharge()) { // weekday
+                    chargeDays++;
+                }
+                else if (dayOfWeek >= 6 && fee.getWeekendCharge()) { // weekend
+                    chargeDays++;
+                }
             }
 
             currentDate = currentDate.plusDays(1);
